@@ -1,0 +1,38 @@
+services:
+  gateway:
+    container_name: client-gateway
+    build: .
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER} 
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - gateway-network
+    depends_on:
+      - postgresdb
+    restart: unless-stopped
+  postgresdb:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB} 
+      POSTGRES_USER: ${POSTGRES_USER} 
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres-data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - gateway-network
+    restart: unless-stopped
+
+networks:
+  gateway-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
