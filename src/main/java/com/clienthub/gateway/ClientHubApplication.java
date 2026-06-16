@@ -27,26 +27,23 @@ public class ClientHubApplication {
 	@Bean
 	CommandLineRunner runner(UserRepository userRepository) {
 		return args -> {
-			User kevin = new User("Kevin",
-			"Rice",
-			"kevinRice",
+			if (userRepository.existsByUsername("kevinRice")) return;
+
+			User kevin = new User("kevinRice",
 			"kevin@email.com",
 			passwordEncoder.encode("C0mpl3x#Pa$$"),
 			Role.ADMIN,
 			false,
 			true);
 
-			User dave = new User("Dave",
-			"Bean",
-			"daveBean",
+			User dave = new User("daveBean",
 			"dave@email.com",
 			passwordEncoder.encode("C0mpl3x#Pa$$"),
 			Role.USER,
 			false,
 			true);
 
-			List<User> users = List.of(kevin, dave);
-			userRepository.saveAll(users);
+			userRepository.saveAll(List.of(kevin, dave));
 		};
 	}
 

@@ -11,7 +11,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -21,3 +21,6 @@ spring:
 app:
   geolocation:
     enabled: true
+
+client-management-api:
+  base-url: ${CLIENT_MANAGEMENT_API_BASE_URL:http://localhost:8081}
