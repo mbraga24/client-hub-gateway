@@ -1,7 +1,6 @@
 package com.clienthub.gateway.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,37 +15,32 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "_user")
+@Table(name = "app_user")
 public class User implements UserDetails {
 
     @Id
-    @SequenceGenerator(
-            name = "user_sequence_generator",
-            sequenceName = "user_id_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence_generator"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
-    private String firstName;
-    @NotBlank
-    private String lastName;
+    @Column(
+        nullable = false
+    )
     private String username;
-    @NotBlank
+    @Column(
+        nullable = false
+    )
     private String email;
-    @NotBlank
+    @Column(
+        nullable = false,
+        name = "password_hash"
+    )
     private String password;
+
     @Enumerated(EnumType.STRING)
     private Role role;
     private Boolean locked;
     private Boolean enabled;
 
-    public User(String firstName, String lastName, String username, String email, String password, Role role, Boolean locked, Boolean enabled) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String username, String email, String password, Role role, Boolean locked, Boolean enabled) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -67,7 +61,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

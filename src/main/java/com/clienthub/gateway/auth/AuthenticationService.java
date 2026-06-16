@@ -7,12 +7,13 @@ import com.clienthub.gateway.exception.custom.UserExistsException;
 import com.clienthub.gateway.exception.custom.UserNotFoundException;
 import com.clienthub.gateway.ipapi.IPApiResponse;
 import com.clienthub.gateway.ipapi.IPApiService;
-import com.clienthub.gateway.user.Role;
 import com.clienthub.gateway.user.User;
 import com.clienthub.gateway.user.UserRepository;
 import com.clienthub.gateway.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.function.client.WebClient;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +33,8 @@ public class AuthenticationService {
     private final PasswordValidationService passwordValidationService;
     private final IPApiService ipApiService;
     private final ValidationUtils validationUtils;
+    private final WebClient webClient;
+
     @Value("${app.geolocation.enabled}")
     private boolean geolocationEnabled;
 
@@ -46,13 +49,26 @@ public class AuthenticationService {
         validatePassword(request.getPassword());
 
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role((Role.USER))
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        // TODO: re-enable when Client Management API is available
+        // webClient.post()
+        //         .uri("/api/v1/customers")
+        //         .bodyValue(Map.of(
+        //             "appUserId", savedUser.getId(),
+        //             "firstName", request.getFirstName(),
+        //             "lastName", request.getLastName(),
+        //             "username", request.getUsername(),
+        //             "email", request.getEmail(),
+        //             "age", request.getAge(),
+        //             "phoneNumber", request.getPhoneNumber()
+        //         ))
+        //         .retrieve()
+        //         .toBodilessEntity()
+        //         .block();
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
@@ -63,10 +79,10 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("The user %s could not be found".formatted(request.getEmail())));
+        var user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("The user %s could not be found".formatted(request.getUsername())));
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -79,9 +95,9 @@ public class AuthenticationService {
         }
     }
 
-    private void validateIfUserExists(String userEmail) {
-        if (userRepository.existsByEmail(userEmail)) {
-            throw new UserExistsException("This email is already taken.");
+    private void validateIfUserExists(String username) {
+        if (userRepository.existsByUsername(username)) {
+            throw new UserExistsException("This username is already taken.");
         }
     }
 
