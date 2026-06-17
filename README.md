@@ -28,10 +28,10 @@ This service acts as the gateway layer for the ClientHub platform. It handles us
 * User registration with IP geolocation eligibility check
 * User login with JWT token generation
 * JWT token validation and secured endpoints
-* Role-based authorization (USER, ADMIN)
+* Role definitions (USER, ADMIN) — not yet enforced at the endpoint level
 * Client management (create/delete) via downstream microservice
 * Flyway database migrations
-* Password validation
+* Password validation (custom regex service)
 * Global exception handling
 * Docker Compose deployment
 * Multi-stage Docker build
@@ -127,13 +127,17 @@ client-hub-api:
 
 ## Security
 
-The application uses Spring Security with JWT authentication.
+The application uses Spring Security with JWT (JJWT 0.11.5) authentication.
 
 After a successful login, a JWT token is returned. Include it in the `Authorization` header for protected endpoints:
 
 ```http
 Authorization: Bearer <jwt-token>
 ```
+
+**Note:** Role definitions (USER, ADMIN) exist in the data model but are not currently enforced in the security filter chain. All authenticated users have equal access to protected endpoints.
+
+Password validation is handled by a custom regex-based service (`PasswordValidationService`), not via Hibernate Validator annotations. Hibernate Validator is included as a dependency but is not used for password rules.
 
 ## Project Structure
 
