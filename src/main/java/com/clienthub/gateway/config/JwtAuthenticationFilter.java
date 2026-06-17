@@ -48,7 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
-        log.info("userEmail: {}", userEmail);
 
         // if userEmail exists but user is not authenticated
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -63,6 +62,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                log.debug("doFilterInternal :: authenticated user [{}]", userEmail);
+            } else {
+                log.warn("doFilterInternal :: invalid JWT token for user [{}]", userEmail);
             }
         }
         filterChain.doFilter(request, response);

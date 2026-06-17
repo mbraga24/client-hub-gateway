@@ -19,13 +19,14 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request, HttpServletRequest httpRequest) {
-        log.info("register :: RECEIVED REQUEST: [{}]", request);
+        log.info("POST /api/v1/authentication/register :: user [{}]", request.getUsername());
         String clientIp = resolveClientIp(httpRequest);
         return ResponseEntity.ok(authService.register(request, clientIp));
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        log.info("POST /api/v1/authentication/authenticate :: user [{}]", request.getUsername());
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
