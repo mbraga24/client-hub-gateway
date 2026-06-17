@@ -116,8 +116,8 @@ app:
   geolocation:
     enabled: true
 
-client-management-api:
-  base-url: ${CLIENT_MANAGEMENT_API_BASE_URL:http://localhost:8081}
+client-hub-api:
+  base-url: ${CLIENT_HUB_API_BASE_URL:http://localhost:8081}
 ```
 
 ### Profiles

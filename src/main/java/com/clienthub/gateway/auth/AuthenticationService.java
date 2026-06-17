@@ -39,6 +39,7 @@ public class AuthenticationService {
     private boolean geolocationEnabled;
 
     public AuthenticationResponse register(RegisterRequest request, String userIpAddress) {
+        log.info("register :: initiating registration for user [{}], ip [{}]", request.getUsername(), userIpAddress);
 
         if (geolocationEnabled) {
             IPApiResponse response = ipApiService.ipAPICall(userIpAddress);
@@ -54,6 +55,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
         User savedUser = userRepository.save(user);
+        log.info("register :: user persisted successfully, userId [{}]", savedUser.getId());
         // TODO: re-enable when Client Management API is available
         // webClient.post()
         //         .uri("/api/v1/customers")
@@ -78,12 +80,14 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        log.info("authenticate :: attempting authentication for user [{}]", request.getUsername());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("The user %s could not be found".formatted(request.getUsername())));
         var jwtToken = jwtService.generateToken(user);
+        log.info("authenticate :: authentication successful for user [{}]", request.getUsername());
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

@@ -24,10 +24,10 @@ public class IPApiService {
                     .bodyToMono(IPApiResponse.class)
                     .block();
 
-            log.info("RECEIVE API :: [{}]", apiResponse.toString());
+            log.info("receive api :: [{}]", apiResponse.toString());
             return apiResponse;
         } catch (Exception error) {
-            log.error("IP API Request Error :: {}", error.getMessage(), error);
+            log.error("IP API Request Error :: [{}]", error.getMessage(), error);
             throw new IPApiException("We're experiencing trouble connecting to our services. Please try again in a few minutes.");
         }
     }
