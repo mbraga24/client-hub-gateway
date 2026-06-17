@@ -13,7 +13,6 @@ import com.clienthub.gateway.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -79,6 +78,7 @@ public class AuthenticationService {
 
     }
 
+    // login
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         log.info("authenticate :: attempting authentication for user [{}]", request.getUsername());
         authenticationManager.authenticate(

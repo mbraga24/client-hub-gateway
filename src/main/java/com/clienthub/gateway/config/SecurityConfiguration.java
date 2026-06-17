@@ -28,7 +28,7 @@ public class SecurityConfiguration {
     /**
      * At the application start Spring Security will try to find for a Bean of type
      * security filter chain. The security filter chain is the Bean responsible for
-     * configuring all the HTTP security of our application.
+     * configuring all the HTTP security of the application.
      *
      * https://docs.spring.io/spring-security/reference/5.8/servlet/authorization/authorize-http-requests.html#_request_matchers
      * https://stackoverflow.com/questions/73107059/disable-csrf-cors-in-spring-boot-spring-security-5-7-and-saml
@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                 .sessionManagement((sessionManagement) -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(authenticationProvider)
+                .authenticationProvider(authenticationProvider) // @Bean defined in SecurityConfig.java
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
